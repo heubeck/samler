@@ -1,0 +1,8 @@
+# ides
+.vscode
+
+# binaries
+samler
+*.o
+*.dat
+*.log

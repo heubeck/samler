@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(action): "
+  - package-ecosystem: "docker"
+    directory: ".github/workflows"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(build): "
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: "chore(deps): "

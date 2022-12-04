@@ -64,12 +64,6 @@ jobs:
                     file samler.$arch
                 done
 
-            - uses: ncipollo/release-action@v1
-              if: github.ref == 'refs/heads/main' && steps.semantic.outputs.new_release_version != null
-              with:
-                artifacts: "release.tar.gz,foo/*.txt"
-                bodyFile: "body.md"
-
             - name: Create Release
               if: github.ref == 'refs/heads/main' && steps.semantic.outputs.new_release_version != null
               uses: cycjimmy/semantic-release-action@v3
@@ -82,7 +76,7 @@ jobs:
               uses: softprops/action-gh-release@v1
               if: github.ref == 'refs/heads/main' && steps.semantic.outputs.new_release_version != null
               with:
-                tag_name: ${{ steps.semantic.outputs.new_release_version }}
+                tag_name: v${{ steps.semantic.outputs.new_release_version }}
                 files: |
                   samler.amd64
                   samler.arm-v7

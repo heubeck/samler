@@ -74,3 +74,17 @@ WantedBy=multi-user.target
 ## Contribution
 
 Yes, please. Looking forward to your ideas.
+
+## Sample installation
+
+At my place, I'm using the SaMLer on a Banana Pi 2 Zero connected to an USB IR sensor attached to the electric smart meter, sending to a free Influx2 Cloud account.
+The visualization is done using a free Grafana Cloud account using the InfluxDB datasource.
+At night, my WLAN is disabled, SaMLer caches the measurements on its "disk" during this network outage and sends it once the connection is recovered in the morning
+
+![](static/SaMLer_IR.jpg)
+
+![](static/SaMLer_Pi.jpg)
+
+![](static/SaMLer_Wifi.jpg)
+
+![](static/SaMLer_Grafana.png)

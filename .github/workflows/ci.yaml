@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - '*'
+    paths-ignore:
+      - '.github/**'
+      - 'static/**'
+      - 'README.md'
 env:
     semantic_version: '19.0.5'
 jobs:

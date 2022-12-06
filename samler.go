@@ -78,7 +78,7 @@ func shouldSendAndMemorize(measure Measurement) bool {
 }
 
 func processLoop(ctx *samler) {
-	fmt.Printf("Init DiskQueue at %s", ctx.cacheLocation)
+	fmt.Printf("Init DiskQueue at %s\n", ctx.cacheLocation)
 	if err := os.MkdirAll(ctx.cacheLocation, fs.ModePerm); err != nil {
 		log.Fatal(err)
 	}

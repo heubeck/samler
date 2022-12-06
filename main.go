@@ -25,16 +25,13 @@ package main
 */
 import "C"
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"unsafe"
-
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/influxdata/influxdb-client-go/v2/api/write"
 
 	diskqueue "github.com/nsqio/go-diskqueue"
 )
@@ -78,24 +75,35 @@ const (
 	DeviceMode        = "SAMLER_DEVICE_MODE"
 	Debug             = "SAMLER_DEBUG"
 	CachePath         = "SAMLER_CACHE_PATH"
+	Backend           = "SAMLER_BACKEND"
 	InfluxUrl         = "SAMLER_INFLUX_URL"
 	InfluxToken       = "SAMLER_INFLUX_TOKEN"
 	InfluxOrg         = "SAMLER_INFLUX_ORG"
 	InfluxBucket      = "SAMLER_INFLUX_BUCKET"
 	InfluxMeasurement = "SAMLER_INFLUX_MEASUREMENT"
+	MySqlDSN          = "SAMLER_MYSQL_DSN"
+	MySqlTable        = "SAMLER_MYSQL_TABLE"
 )
 
-var configOptions = map[string]string{
-	Device:            "/dev/ttyUSB0",
-	DeviceBaudRate:    "9600",
-	DeviceMode:        "8-N-1",
-	Debug:             "false",
-	CachePath:         getUserHome() + "/.samler",
-	InfluxUrl:         "",
-	InfluxToken:       "",
-	InfluxOrg:         "",
-	InfluxBucket:      "home",
-	InfluxMeasurement: "power",
+const (
+	Influx = "influx"
+	MySql  = "mysql"
+)
+
+var configOptions = map[string][]string{
+	Device:            {"/dev/ttyUSB0"},
+	DeviceBaudRate:    {"9600"},
+	DeviceMode:        {"8-N-1"},
+	Debug:             {"false"},
+	CachePath:         {getUserHome() + "/.samler"},
+	Backend:           {Influx, MySql},
+	InfluxUrl:         {"-"},
+	InfluxToken:       {"-"},
+	InfluxOrg:         {"-"},
+	InfluxBucket:      {"home"},
+	InfluxMeasurement: {"power"},
+	MySqlDSN:          {"-"},
+	MySqlTable:        {"home_power"},
 }
 
 func getUserHome() string {
@@ -111,21 +119,26 @@ func readConfig() map[string]string {
 	for key, def := range configOptions {
 		value, isSet := os.LookupEnv(key)
 		if isSet {
-		} else if def != "" {
-			value = def
+		} else if len(def) == 1 {
+			value = def[0]
 		} else {
-			printHelpAndExit()
+			printHelpAndExit("Please set all values without default depending on the chosen backend")
 		}
 		config[key] = value
 	}
 	return config
 }
 
-func printHelpAndExit() {
+func printHelpAndExit(hint string) {
 	fmt.Println("# Configuration options, set them as ENV:")
 	for key, dev := range configOptions {
-		fmt.Printf("%s (default: %s)\n", key, dev)
+		if len(dev) == 1 {
+			fmt.Printf("%s (default: %s)\n", key, dev[0])
+		} else {
+			fmt.Printf("%s (options: %s)\n", key, strings.Join(dev[:], ", "))
+		}
 	}
+	fmt.Printf("\n%s\n", hint)
 	os.Exit(0)
 }
 
@@ -136,36 +149,12 @@ func main() {
 	if flag, err := strconv.ParseBool(config[Debug]); err == nil {
 		debugFlag = flag
 	} else {
-		log.Printf("Illegal debug flag value %s: %s\n", config[Debug], err)
-		printHelpAndExit()
+		printHelpAndExit(fmt.Sprintf("Illegal debug flag value %s: %s\n", config[Debug], err))
 	}
 
-	fmt.Printf("Init Influx for %s at %s\n", config[InfluxOrg], config[InfluxUrl])
+	sendToInflux := selectBackend(config)
 
-	influxClient := influxdb2.NewClient(config[InfluxUrl], config[InfluxToken])
-	writeAPI := influxClient.WriteAPIBlocking(config[InfluxOrg], config[InfluxBucket])
-
-	sendToInflux := func(measurement Measurement) bool {
-		tags := map[string]string{
-			"ident":  measurement.Ident,
-			"unit":   measurement.Unit,
-			"prefix": measurement.Prefix,
-			"suffix": measurement.Suffix,
-		}
-		fields := map[string]interface{}{
-			"value": measurement.Value,
-		}
-		debug("Sending to influx", &measurement)
-		point := write.NewPoint(config[InfluxMeasurement], tags, fields, measurement.Time)
-		err := writeAPI.WritePoint(context.Background(), point)
-		if err != nil {
-			log.Printf("Failed sending to influx %s\n", err)
-			return false
-		}
-		return true
-	}
-
-	// config
+	// device config
 	name := C.CString(config[Device])
 	defer C.free(unsafe.Pointer(name))
 
@@ -174,8 +163,7 @@ func main() {
 
 	rate, err := strconv.Atoi(config[DeviceBaudRate])
 	if err != nil {
-		log.Printf("Illegal baud rate value %s: %s\n", config[DeviceBaudRate], err)
-		printHelpAndExit()
+		printHelpAndExit(fmt.Sprintf("Illegal baud rate value %s: %s\n", config[DeviceBaudRate], err))
 	}
 	baudRate := C.int(rate)
 
@@ -199,6 +187,28 @@ func main() {
 		if exitCode != 0 {
 			os.Exit(abs(exitCode))
 		}
+	}
+}
+
+func selectBackend(config map[string]string) func(measurement Measurement) bool {
+	backend := config[Backend]
+	switch backend {
+	case MySql:
+		return InitializeMySQL(
+			config[MySqlDSN],
+			config[MySqlTable],
+		)
+	case Influx:
+		return InitializeInflux(
+			config[InfluxUrl],
+			config[InfluxToken],
+			config[InfluxOrg],
+			config[InfluxBucket],
+			config[InfluxMeasurement],
+		)
+	default:
+		printHelpAndExit(fmt.Sprintf("Unknown backend '%s', please select from [%s, %s]\n", backend, Influx, MySql))
+		return func(m Measurement) bool { return false }
 	}
 }
 

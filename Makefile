@@ -16,13 +16,15 @@
 
 all: samler
 
+test: libsml
+	go test
+
 libsml:
 	make -C libsml/sml
 	make -C libsml/examples
 
 samler: libsml
 	go build -ldflags "-X main.Version=$$VERSION"
-	go test
 
 .PHONY: clean libsml
 clean:

@@ -70,12 +70,15 @@ func TestReadOverriddenConfig(t *testing.T) {
 	os.Setenv(DeviceBaudRate, "DeviceBaudRate")
 	os.Setenv(DeviceMode, "DeviceMode")
 	os.Setenv(Debug, "Debug")
+	os.Setenv(Backend, "Influx")
 	os.Setenv(CachePath, "CachePath")
 	os.Setenv(InfluxUrl, "InfluxUrl")
 	os.Setenv(InfluxToken, "InfluxToken")
 	os.Setenv(InfluxOrg, "InfluxOrg")
 	os.Setenv(InfluxBucket, "InfluxBucket")
 	os.Setenv(InfluxMeasurement, "InfluxMeasurement")
+	os.Setenv(MySqlDSN, "MySqlDSN")
+	os.Setenv(MySqlTable, "MySqlTable")
 
 	// When
 	config := readConfig()
@@ -91,6 +94,9 @@ func TestReadOverriddenConfig(t *testing.T) {
 		t.Fatal()
 	}
 	if config[Debug] != "Debug" {
+		t.Fatal()
+	}
+	if config[Backend] != "Influx" {
 		t.Fatal()
 	}
 	if config[CachePath] != "CachePath" {
@@ -109,6 +115,12 @@ func TestReadOverriddenConfig(t *testing.T) {
 		t.Fatal()
 	}
 	if config[InfluxMeasurement] != "InfluxMeasurement" {
+		t.Fatal()
+	}
+	if config[MySqlDSN] != "MySqlDSN" {
+		t.Fatal()
+	}
+	if config[MySqlTable] != "MySqlTable" {
 		t.Fatal()
 	}
 }

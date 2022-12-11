@@ -10,6 +10,9 @@ Credits to these projects!
 ## Use
 
 The dependency `libuuid` has to be installed on the target system, on Debian based systems availabe from package `uuid-runtime`.
+```shell
+sudo apt-get install uuid-runtime
+```
 
 There are pre-build binaries available with every [release](https://github.com/heubeck/samler/releases).
 
@@ -55,15 +58,14 @@ With MySQL the script can look like, the target table is created automatically i
 ```shell
 #!/bin/bash
 SAMLER_BACKEND=mysql \
-SAMLER_MYSQL_DSN=user:password@tcp(your-database-host:3306)/samler \
+SAMLER_MYSQL_DSN="user:password@tcp(your-database-host:3306)/samler" \
 /opt/samler.arm-v7
 ```
 
 Using systemd a service description may look like:
 
 ```shell
-> cat /etc/systemd/system/samler.service
-[Unit]
+echo "[Unit]
 Description=SaMLer SmartMeter Data collector
 StartLimitIntervalSec=0
 [Service]
@@ -74,7 +76,13 @@ User=root
 ExecStart=/opt/run_samler.sh
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target"  > /etc/systemd/system/samler.service
+```
+```shell
+systemctl enable samler.service
+```
+```shell
+systemctl start samler.service
 ```
 
 ## Known restrictions & TODO

@@ -23,6 +23,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	diskqueue "github.com/nsqio/go-diskqueue"
@@ -41,6 +42,7 @@ type samler struct {
 	messageChannel chan Measurement
 	send           func(Measurement) bool
 	cacheLocation  string
+	identFilter    []string
 }
 
 var memo = make(map[string]Measurement)
@@ -55,13 +57,24 @@ func RunSamler(
 	messageChannel chan Measurement,
 	send func(Measurement) bool,
 	cacheLocation string,
+	identFilter string,
 ) {
 	samler := samler{
 		messageChannel: messageChannel,
 		send:           send,
 		cacheLocation:  cacheLocation,
+		identFilter:    toFilterList(identFilter),
 	}
 	go processLoop(&samler)
+}
+
+func toFilterList(identFilter string) []string {
+	rawIdentFilterList := strings.Split(identFilter, ",")
+	identFilterList := make([]string, len(rawIdentFilterList))
+	for i, v := range rawIdentFilterList {
+		identFilterList[i] = strings.TrimSpace(v)
+	}
+	return identFilterList
 }
 
 func shouldSendAndMemorize(measure Measurement) bool {

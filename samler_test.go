@@ -48,7 +48,7 @@ func TestSuccessfullSending(t *testing.T) {
 		sent = m
 		return true
 	}
-	RunSamler(messages, send, tempDir())
+	RunSamler(messages, send, tempDir(), "")
 
 	// When
 	messages <- measurement
@@ -79,7 +79,7 @@ func TestFailedSending(t *testing.T) {
 		result = !result
 		return result
 	}
-	RunSamler(messages, send, tempDir())
+	RunSamler(messages, send, tempDir(), "")
 
 	// When
 	messages <- measurement
@@ -93,5 +93,23 @@ func TestFailedSending(t *testing.T) {
 
 	if sent.Value != 23.5 {
 		t.Error()
+	}
+}
+
+func TestToEmptyFilterList(t *testing.T) {
+	// Given
+	empties := []string{"", " ", ",", " ,   , "}
+
+	// When
+	mapped := [4][]string{}
+	for i, v := range empties {
+		mapped[i] = toFilterList(v)
+	}
+
+	// Then
+	for _, v := range mapped {
+		if len(v) != 0 {
+			t.Fatalf("Expected empty array, got %s", v)
+		}
 	}
 }

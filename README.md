@@ -85,6 +85,35 @@ systemctl enable samler.service
 systemctl start samler.service
 ```
 
+## Grafana Dashboard Flux Query Examples
+
+In case you are interested in leveraging data stored in Influx by Samler, you can use the following queries for some basic dashboards:
+
+Total energy consumption (1.8.0) and production (2.8.0) dashboard data in kWh:
+
+```
+from(bucket: "home")
+    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+	|> filter(fn: (r) => r["_measurement"] == "power")
+    |> filter(fn: (r) => r["ident"] == "1.8.0" or r["ident"] == "2.8.0")
+    |> map(fn: (r) => ({r with _value: r._value / 1000.0}))
+    |> map(fn: (r) => ({r with unit: "kWh"}))
+```
+
+Differences in consumption (1.8.0) and poduction (2.8.0) dashboard data in Wh:
+
+```
+from(bucket: "home")
+    |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+		|> filter(fn: (r) => r["_measurement"] == "power")
+    |> filter(fn: (r) => r["ident"] == "1.8.0" or r["ident"] == "2.8.0")
+    |> difference()
+```
+
+Example data:
+
+![](static/SaMLer_Grafana_Simple_Dashboard.png)
+
 ## Known restrictions & TODO
 
 * By now, there's only a single serial mode supported what's reflected in the configuration defaults:

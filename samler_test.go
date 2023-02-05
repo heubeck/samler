@@ -20,6 +20,7 @@ package main
 import (
 	"log"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -111,6 +112,20 @@ func TestToEmptyFilterList(t *testing.T) {
 		if len(v) != 0 {
 			t.Fatalf("Expected empty array, got %s", v)
 		}
+	}
+}
+
+func TestToFilterList(t *testing.T) {
+	if !reflect.DeepEqual(toFilterList("1.2.3, , 4.3.2"), []string{"1.2.3", "4.3.2"}) {
+		t.Error()
+	}
+
+	if !reflect.DeepEqual(toFilterList(" 1.2.3   , ,  , 4.3.2  "), []string{"1.2.3", "4.3.2"}) {
+		t.Error()
+	}
+
+	if !reflect.DeepEqual(toFilterList(" 1.2.5   ,4.3.1,  , 4.1.2  "), []string{"1.2.5", "4.3.1", "4.1.2"}) {
+		t.Error()
 	}
 }
 

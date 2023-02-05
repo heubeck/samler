@@ -70,10 +70,23 @@ func RunSamler(
 
 func toFilterList(identFilter string) []string {
 	rawIdentFilterList := strings.Split(identFilter, ",")
-	identFilterList := make([]string, len(rawIdentFilterList))
+	tmpIdentFilterList := make([]string, len(rawIdentFilterList))
+	count := 0
 	for i, v := range rawIdentFilterList {
-		identFilterList[i] = strings.TrimSpace(v)
+		tmpIdentFilterList[i] = strings.TrimSpace(v)
+		if len(tmpIdentFilterList[i]) > 0 {
+			count += 1
+		}
 	}
+	identFilterList := make([]string, count)
+	i := 0
+	for _, v := range tmpIdentFilterList {
+		if len(v) > 0 {
+			identFilterList[i] = v
+			i += 1
+		}
+	}
+
 	return identFilterList
 }
 

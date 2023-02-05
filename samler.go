@@ -1,6 +1,6 @@
 /*
 SaMLer - Smart Meter data colletor at the edge
-Copyright (C) 2022  Florian Heubeck
+Copyright (C) 2023  Florian Heubeck
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	diskqueue "github.com/nsqio/go-diskqueue"
@@ -41,6 +42,7 @@ type samler struct {
 	messageChannel chan Measurement
 	send           func(Measurement) bool
 	cacheLocation  string
+	identFilter    []string
 }
 
 var memo = make(map[string]Measurement)
@@ -55,16 +57,44 @@ func RunSamler(
 	messageChannel chan Measurement,
 	send func(Measurement) bool,
 	cacheLocation string,
+	identFilter string,
 ) {
 	samler := samler{
 		messageChannel: messageChannel,
 		send:           send,
 		cacheLocation:  cacheLocation,
+		identFilter:    toFilterList(identFilter),
 	}
 	go processLoop(&samler)
 }
 
-func shouldSendAndMemorize(measure Measurement) bool {
+func toFilterList(identFilter string) []string {
+	rawIdentFilterList := strings.Split(identFilter, ",")
+	tmpIdentFilterList := make([]string, len(rawIdentFilterList))
+	count := 0
+	for i, v := range rawIdentFilterList {
+		tmpIdentFilterList[i] = strings.TrimSpace(v)
+		if len(tmpIdentFilterList[i]) > 0 {
+			count += 1
+		}
+	}
+	identFilterList := make([]string, count)
+	i := 0
+	for _, v := range tmpIdentFilterList {
+		if len(v) > 0 {
+			identFilterList[i] = v
+			i += 1
+		}
+	}
+
+	return identFilterList
+}
+
+func shouldSendAndMemorize(measure Measurement, identFilter []string) bool {
+	if !isRelevant(measure.Ident, identFilter) {
+		return false
+	}
+
 	key := fmt.Sprintf("%s#%s#%s", measure.Prefix, measure.Ident, measure.Suffix)
 	previous, ok := memo[key]
 	if !ok || previous.Value != measure.Value || previous.Time.Add(60*time.Second).Before(time.Now()) {
@@ -75,6 +105,19 @@ func shouldSendAndMemorize(measure Measurement) bool {
 		debug("Skipped", &measure)
 		return false
 	}
+}
+
+func isRelevant(ident string, identFilter []string) bool {
+	if len(identFilter) == 0 {
+		return true
+	}
+
+	for _, filter := range identFilter {
+		if ident == filter {
+			return true
+		}
+	}
+	return false
 }
 
 func processLoop(ctx *samler) {
@@ -142,7 +185,7 @@ func processLoop(ctx *samler) {
 	for {
 		measurement := <-ctx.messageChannel
 
-		if shouldSendAndMemorize(measurement) {
+		if shouldSendAndMemorize(measurement, ctx.identFilter) {
 			if circuitOpen || !send(measurement) {
 				writeToDisk(measurement)
 			}

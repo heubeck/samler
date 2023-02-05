@@ -1,6 +1,6 @@
 /*
 SaMLer - Smart Meter data colletor at the edge
-Copyright (C) 2022  Florian Heubeck
+Copyright (C) 2023  Florian Heubeck
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package main
 import (
 	"log"
 	"os"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -48,7 +49,7 @@ func TestSuccessfullSending(t *testing.T) {
 		sent = m
 		return true
 	}
-	RunSamler(messages, send, tempDir())
+	RunSamler(messages, send, tempDir(), "")
 
 	// When
 	messages <- measurement
@@ -79,7 +80,7 @@ func TestFailedSending(t *testing.T) {
 		result = !result
 		return result
 	}
-	RunSamler(messages, send, tempDir())
+	RunSamler(messages, send, tempDir(), "")
 
 	// When
 	messages <- measurement
@@ -92,6 +93,66 @@ func TestFailedSending(t *testing.T) {
 	time.Sleep(32 * time.Second)
 
 	if sent.Value != 23.5 {
+		t.Error()
+	}
+}
+
+func TestToEmptyFilterList(t *testing.T) {
+	// Given
+	empties := []string{"", " ", ",", " ,   , "}
+
+	// When
+	mapped := [4][]string{}
+	for i, v := range empties {
+		mapped[i] = toFilterList(v)
+	}
+
+	// Then
+	for _, v := range mapped {
+		if len(v) != 0 {
+			t.Fatalf("Expected empty array, got %s", v)
+		}
+	}
+}
+
+func TestToFilterList(t *testing.T) {
+	if !reflect.DeepEqual(toFilterList("1.2.3, , 4.3.2"), []string{"1.2.3", "4.3.2"}) {
+		t.Error()
+	}
+
+	if !reflect.DeepEqual(toFilterList(" 1.2.3   , ,  , 4.3.2  "), []string{"1.2.3", "4.3.2"}) {
+		t.Error()
+	}
+
+	if !reflect.DeepEqual(toFilterList(" 1.2.5   ,4.3.1,  , 4.1.2  "), []string{"1.2.5", "4.3.1", "4.1.2"}) {
+		t.Error()
+	}
+}
+
+func TestIsRelevantWithValues(t *testing.T) {
+	// Given
+	filter := []string{"1.8.1", "2.4.1"}
+
+	// When && Then
+	if isRelevant("2.8.1", filter) {
+		t.Error()
+	}
+
+	if isRelevant("1.8", filter) {
+		t.Error()
+	}
+
+	if !isRelevant("1.8.1", filter) {
+		t.Error()
+	}
+
+	if !isRelevant("2.4.1", filter) {
+		t.Error()
+	}
+}
+
+func TestIsRelevantEmptyList(t *testing.T) {
+	if !isRelevant("1.2.3", []string{}) {
 		t.Error()
 	}
 }

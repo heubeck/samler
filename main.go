@@ -1,6 +1,6 @@
 /*
 SaMLer - Smart Meter data colletor at the edge
-Copyright (C) 2022  Florian Heubeck
+Copyright (C) 2023  Florian Heubeck
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import (
 )
 
 var Version string
-var notice = fmt.Sprintf(`SaMLer v%s  Copyright (C) 2022  Florian Heubeck
+var notice = fmt.Sprintf(`SaMLer v%s  Copyright (C) 2023  Florian Heubeck
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 `, Version)
@@ -83,6 +83,7 @@ const (
 	InfluxMeasurement = "SAMLER_INFLUX_MEASUREMENT"
 	MySqlDSN          = "SAMLER_MYSQL_DSN"
 	MySqlTable        = "SAMLER_MYSQL_TABLE"
+	IdentFilter       = "SAMLER_IDENT_FILTER"
 )
 
 const (
@@ -104,6 +105,7 @@ var configOptions = map[string][]string{
 	InfluxMeasurement: {"power"},
 	MySqlDSN:          {"-"},
 	MySqlTable:        {"home_power"},
+	IdentFilter:       {""},
 }
 
 func getUserHome() string {
@@ -152,7 +154,7 @@ func main() {
 		printHelpAndExit(fmt.Sprintf("Illegal debug flag value %s: %s\n", config[Debug], err))
 	}
 
-	sendToInflux := selectBackend(config)
+	sendToBackend := selectBackend(config)
 
 	// device config
 	name := C.CString(config[Device])
@@ -178,7 +180,7 @@ func main() {
 	callbacks.event = C.SmlEvent(C.propagateEvent)
 
 	fmt.Println("Start Samler")
-	RunSamler(_messages, sendToInflux, config[CachePath])
+	RunSamler(_messages, sendToBackend, config[CachePath], config[IdentFilter])
 
 	for {
 		fmt.Printf("Listen to %s\n", config[Device])

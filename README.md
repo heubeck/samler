@@ -20,24 +20,25 @@ SaMLer is configured using environment variables, just run it, to let it print i
 
 ```shell
 > ./samler.amd64
-SaMLer v0.3.0  Copyright (C) 2022  Florian Heubeck
+SaMLer v0.4.0  Copyright (C) 2023  Florian Heubeck
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 
 # Configuration options, set them as ENV:
-SAMLER_MYSQL_DSN (default: -)
-SAMLER_DEVICE_BAUD_RATE (default: 9600)
+SAMLER_INFLUX_TOKEN (default: -)
+SAMLER_DEVICE (default: /dev/ttyUSB0)
 SAMLER_DEVICE_MODE (default: 8-N-1)
 SAMLER_INFLUX_URL (default: -)
-SAMLER_INFLUX_TOKEN (default: -)
-SAMLER_INFLUX_BUCKET (default: home)
-SAMLER_INFLUX_MEASUREMENT (default: power)
-SAMLER_MYSQL_TABLE (default: home_power)
-SAMLER_DEVICE (default: /dev/ttyUSB0)
-SAMLER_DEBUG (default: false)
-SAMLER_CACHE_PATH (default: /home/heubeck/.samler)
-SAMLER_BACKEND (options: influx, mysql)
 SAMLER_INFLUX_ORG (default: -)
+SAMLER_MYSQL_TABLE (default: home_power)
+SAMLER_DEVICE_BAUD_RATE (default: 9600)
+SAMLER_CACHE_PATH (default: /home/heubeck/.samler)
+SAMLER_IDENT_FILTER (default: ) # Comma separated idents to forward, e.g. "1.8.0,16.7.0"
+SAMLER_DEBUG (default: false)
+SAMLER_MYSQL_DSN (default: -)
+SAMLER_INFLUX_MEASUREMENT (default: power)
+SAMLER_BACKEND (options: influx, mysql)
+SAMLER_INFLUX_BUCKET (default: home)
 
 Please set all values without default depending on the chosen backend
 ```

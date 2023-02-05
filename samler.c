@@ -1,6 +1,6 @@
 /*
 SaMLer - Smart Meter data colletor at the edge
-Copyright (C) 2022  Florian Heubeck
+Copyright (C) 2023  Florian Heubeck
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ void transport_receiver(unsigned char *buffer, size_t buffer_len) {
 				char suffixString[5] = "";
 				char valueString[20] = "";
 				char unitString[5] = "";
-				
+
 				if (!entry->value) { // do not crash on null value
 					fprintf(stderr, "Error in data stream. entry->value should not be NULL. Skipping this.\n");
 					continue;
@@ -151,7 +151,7 @@ void transport_receiver(unsigned char *buffer, size_t buffer_len) {
 					snprintf(valueString, 20, "%.*f", prec, value);
 					snprintf(unitString, 5,  "%s", unit != NULL ? unit : "");
 				}
-				
+
 				struct SmlValue smlValue;
 				memset(&smlValue, 0, sizeof(smlValue));
 				smlValue.ident = identString;

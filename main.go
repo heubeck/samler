@@ -105,7 +105,7 @@ var configOptions = map[string][]string{
 	InfluxMeasurement: {"power"},
 	MySqlDSN:          {"-"},
 	MySqlTable:        {"home_power"},
-	IdentFilter:       {""},
+	IdentFilter:       {"-"},
 }
 
 func getUserHome() string {

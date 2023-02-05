@@ -99,10 +99,10 @@ func TestFailedSending(t *testing.T) {
 
 func TestToEmptyFilterList(t *testing.T) {
 	// Given
-	empties := []string{"", " ", ",", " ,   , "}
+	empties := []string{"-", "", " ", ",", " ,   , "}
 
 	// When
-	mapped := [4][]string{}
+	mapped := [5][]string{}
 	for i, v := range empties {
 		mapped[i] = toFilterList(v)
 	}

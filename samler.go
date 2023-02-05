@@ -74,14 +74,14 @@ func toFilterList(identFilter string) []string {
 	count := 0
 	for i, v := range rawIdentFilterList {
 		tmpIdentFilterList[i] = strings.TrimSpace(v)
-		if len(tmpIdentFilterList[i]) > 0 {
+		if len(tmpIdentFilterList[i]) > 0 && tmpIdentFilterList[i] != "-" {
 			count += 1
 		}
 	}
 	identFilterList := make([]string, count)
 	i := 0
 	for _, v := range tmpIdentFilterList {
-		if len(v) > 0 {
+		if len(v) > 0 && v != "-" {
 			identFilterList[i] = v
 			i += 1
 		}

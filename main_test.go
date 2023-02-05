@@ -79,6 +79,7 @@ func TestReadOverriddenConfig(t *testing.T) {
 	os.Setenv(InfluxMeasurement, "InfluxMeasurement")
 	os.Setenv(MySqlDSN, "MySqlDSN")
 	os.Setenv(MySqlTable, "MySqlTable")
+	os.Setenv(IdentFilter, "IdentFilter")
 
 	// When
 	config := readConfig()
@@ -121,6 +122,9 @@ func TestReadOverriddenConfig(t *testing.T) {
 		t.Fatal()
 	}
 	if config[MySqlTable] != "MySqlTable" {
+		t.Fatal()
+	}
+	if config[IdentFilter] != "IdentFilter" {
 		t.Fatal()
 	}
 }

@@ -46,7 +46,7 @@ func TestSuccessfulInfluxSend(t *testing.T) {
 	// Setup testcontainer
 	token := "this-is-secret"
 	req := testcontainers.ContainerRequest{
-		Image:        "influxdb:2.5",
+		Image:        "influxdb:2.6",
 		ExposedPorts: []string{"8086/tcp"},
 		WaitingFor:   wait.ForExposedPort(),
 		Env: map[string]string{

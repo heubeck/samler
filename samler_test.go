@@ -113,3 +113,31 @@ func TestToEmptyFilterList(t *testing.T) {
 		}
 	}
 }
+
+func TestIsRelevantWithValues(t *testing.T) {
+	// Given
+	filter := []string{"1.8.1", "2.4.1"}
+
+	// When && Then
+	if isRelevant("2.8.1", filter) {
+		t.Error()
+	}
+
+	if isRelevant("1.8", filter) {
+		t.Error()
+	}
+
+	if !isRelevant("1.8.1", filter) {
+		t.Error()
+	}
+
+	if !isRelevant("2.4.1", filter) {
+		t.Error()
+	}
+}
+
+func TestIsRelevantEmptyList(t *testing.T) {
+	if !isRelevant("1.2.3", []string{}) {
+		t.Error()
+	}
+}

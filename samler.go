@@ -77,7 +77,11 @@ func toFilterList(identFilter string) []string {
 	return identFilterList
 }
 
-func shouldSendAndMemorize(measure Measurement) bool {
+func shouldSendAndMemorize(measure Measurement, identFilter []string) bool {
+	if !isRelevant(measure.Ident, identFilter) {
+		return false
+	}
+
 	key := fmt.Sprintf("%s#%s#%s", measure.Prefix, measure.Ident, measure.Suffix)
 	previous, ok := memo[key]
 	if !ok || previous.Value != measure.Value || previous.Time.Add(60*time.Second).Before(time.Now()) {
@@ -88,6 +92,19 @@ func shouldSendAndMemorize(measure Measurement) bool {
 		debug("Skipped", &measure)
 		return false
 	}
+}
+
+func isRelevant(ident string, identFilter []string) bool {
+	if len(identFilter) == 0 {
+		return true
+	}
+
+	for _, filter := range identFilter {
+		if ident == filter {
+			return true
+		}
+	}
+	return false
 }
 
 func processLoop(ctx *samler) {
@@ -155,7 +172,7 @@ func processLoop(ctx *samler) {
 	for {
 		measurement := <-ctx.messageChannel
 
-		if shouldSendAndMemorize(measurement) {
+		if shouldSendAndMemorize(measurement, ctx.identFilter) {
 			if circuitOpen || !send(measurement) {
 				writeToDisk(measurement)
 			}

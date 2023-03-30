@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/go-sql-driver/mysql v1.7.0
-	github.com/influxdata/influxdb-client-go/v2 v2.12.2
+	github.com/influxdata/influxdb-client-go/v2 v2.12.3
 	github.com/nsqio/go-diskqueue v1.1.1-0.20211017194114-cc41549f81d5
 	github.com/testcontainers/testcontainers-go v0.15.0
 )
@@ -38,8 +38,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad // indirect
 	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

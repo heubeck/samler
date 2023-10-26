@@ -13,7 +13,6 @@ jobs:
     ci:
         name: Application Build
         runs-on: ubuntu-latest
-        if: github.actor != 'dependabot[bot]'
         steps:
             - name: Checkout Code
               uses: actions/checkout@v4
@@ -42,6 +41,7 @@ jobs:
 
             - name: Build AMD64 binary
               uses: docker/build-push-action@v5
+              if: github.ref == 'refs/heads/main'
               with:
                 tags: result:amd64
                 platforms: linux/amd64
@@ -53,6 +53,7 @@ jobs:
 
             - name: Build ARM v7 binary
               uses: docker/build-push-action@v5
+              if: github.ref == 'refs/heads/main'
               with:
                 tags: result:arm-v7
                 platforms: linux/arm/v7
@@ -63,6 +64,7 @@ jobs:
                 push: false
 
             - name: Extract results
+              if: github.ref == 'refs/heads/main'
               run: |
                 for arch in amd64 arm-v7; do
                     id=$(docker create result:$arch)

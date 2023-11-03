@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/influxdata/influxdb-client-go/v2 v2.12.3
+	github.com/influxdata/influxdb-client-go/v2 v2.12.4
 	github.com/nsqio/go-diskqueue v1.1.1-0.20211017194114-cc41549f81d5
 	github.com/testcontainers/testcontainers-go v0.26.0
 )

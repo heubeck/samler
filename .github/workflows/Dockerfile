@@ -3,7 +3,7 @@ FROM golang:1.22
 # Injected from the build
 ARG VERSION
 
-RUN apt-get update && apt-get install uuid-dev uuid-runtime
+RUN apt-get update -y && apt-get install -y uuid-dev uuid-runtime
 
 # make it
 WORKDIR /build

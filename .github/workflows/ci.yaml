@@ -4,7 +4,7 @@ on:
     branches:
       - '**'
     paths-ignore:
-      - '.github/**'
+      - '.github/dependabot.yml'
       - 'static/**'
       - 'README.md'
 env:

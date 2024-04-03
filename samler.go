@@ -136,11 +136,11 @@ func processLoop(ctx *samler) {
 		success := ctx.send(measure)
 		if !success {
 			circuitOpen = true
-			log.Printf("Ciruit open")
+			log.Printf("Circuit open")
 			go func() {
 				time.Sleep(30 * time.Second)
 				circuitOpen = false
-				log.Printf("Ciruit closed")
+				log.Printf("Circuit closed")
 			}()
 		}
 		return success

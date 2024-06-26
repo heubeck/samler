@@ -40,7 +40,7 @@ jobs:
                 make test
 
             - name: Build AMD64 binary
-              uses: docker/build-push-action@v5
+              uses: docker/build-push-action@v6
               if: github.ref == 'refs/heads/main'
               with:
                 tags: result:amd64
@@ -52,7 +52,7 @@ jobs:
                 push: false
 
             - name: Build ARM v7 binary
-              uses: docker/build-push-action@v5
+              uses: docker/build-push-action@v6
               if: github.ref == 'refs/heads/main'
               with:
                 tags: result:arm-v7

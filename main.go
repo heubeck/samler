@@ -1,6 +1,6 @@
 /*
 SaMLer - Smart Meter data colletor at the edge
-Copyright (C) 2023  Florian Heubeck
+Copyright (C) 2024  Florian Heubeck
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import (
 )
 
 var Version string
-var notice = fmt.Sprintf(`SaMLer v%s  Copyright (C) 2023  Florian Heubeck
+var notice = fmt.Sprintf(`SaMLer v%s  Copyright (C) 2024  Florian Heubeck
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 `, Version)

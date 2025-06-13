@@ -1,11 +1,9 @@
 module samler
 
-go 1.23.0
-
-toolchain go1.24.3
+go 1.24.3
 
 require (
-	github.com/go-sql-driver/mysql v1.9.2
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/influxdata/influxdb-client-go/v2 v2.14.0
 	github.com/nsqio/go-diskqueue v1.1.1-0.20211017194114-cc41549f81d5
 	github.com/testcontainers/testcontainers-go v0.37.0
@@ -63,8 +61,8 @@ require (
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240318140521-94a12d6c2237 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect

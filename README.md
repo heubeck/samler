@@ -20,7 +20,7 @@ SaMLer is configured using environment variables, just run it, to let it print i
 
 ```shell
 > ./samler.amd64
-SaMLer v0.5.0  Copyright (C) 2024  Florian Heubeck
+SaMLer v0.5.0  Copyright (C) 2025  Florian Heubeck
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 

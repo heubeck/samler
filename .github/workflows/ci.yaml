@@ -1,23 +1,23 @@
 name: Build
 on:
-  push:
-    branches:
-      - '**'
-    paths-ignore:
-      - '.github/dependabot.yml'
-      - 'static/**'
-      - 'README.md'
+    push:
+        branches:
+            - "**"
+        paths-ignore:
+            - ".github/dependabot.yml"
+            - "static/**"
+            - "README.md"
 env:
-    semantic_version: '19.0.5'
+    semantic_version: "19.0.5"
 jobs:
     ci:
         name: Application Build
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
-                  submodules: 'true'
+                  submodules: "true"
 
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3
@@ -36,46 +36,46 @@ jobs:
 
             - uses: actions/setup-go@v5
               with:
-                go-version: '1.24.3'
+                  go-version: "1.24.6"
 
             - name: Test
               run: |
-                sudo apt-get install -y uuid-dev uuid-runtime
-                make test
+                  sudo apt-get install -y uuid-dev uuid-runtime
+                  make test
 
             - name: Build AMD64 binary
               uses: docker/build-push-action@v6
               if: github.ref == 'refs/heads/main'
               with:
-                tags: result:amd64
-                platforms: linux/amd64
-                file: .github/workflows/Dockerfile
-                build-args: |
-                  VERSION=${{ steps.semantic.outputs.new_release_version }}
-                load: true
-                push: false
+                  tags: result:amd64
+                  platforms: linux/amd64
+                  file: .github/workflows/Dockerfile
+                  build-args: |
+                      VERSION=${{ steps.semantic.outputs.new_release_version }}
+                  load: true
+                  push: false
 
             - name: Build ARM v7 binary
               uses: docker/build-push-action@v6
               if: github.ref == 'refs/heads/main'
               with:
-                tags: result:arm-v7
-                platforms: linux/arm/v7
-                file: .github/workflows/Dockerfile
-                build-args: |
-                  VERSION=${{ steps.semantic.outputs.new_release_version }}
-                load: true
-                push: false
+                  tags: result:arm-v7
+                  platforms: linux/arm/v7
+                  file: .github/workflows/Dockerfile
+                  build-args: |
+                      VERSION=${{ steps.semantic.outputs.new_release_version }}
+                  load: true
+                  push: false
 
             - name: Extract results
               if: github.ref == 'refs/heads/main'
               run: |
-                for arch in amd64 arm-v7; do
-                    id=$(docker create result:$arch)
-                    docker cp $id:/build/samler samler.$arch
-                    docker rm -v $id
-                    file samler.$arch
-                done
+                  for arch in amd64 arm-v7; do
+                      id=$(docker create result:$arch)
+                      docker cp $id:/build/samler samler.$arch
+                      docker rm -v $id
+                      file samler.$arch
+                  done
 
             - name: Create Release
               if: github.ref == 'refs/heads/main' && steps.semantic.outputs.new_release_version != null
@@ -89,7 +89,7 @@ jobs:
               uses: softprops/action-gh-release@v2
               if: github.ref == 'refs/heads/main' && steps.semantic.outputs.new_release_version != null
               with:
-                tag_name: v${{ steps.semantic.outputs.new_release_version }}
-                files: |
-                  samler.amd64
-                  samler.arm-v7
+                  tag_name: v${{ steps.semantic.outputs.new_release_version }}
+                  files: |
+                      samler.amd64
+                      samler.arm-v7

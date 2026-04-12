@@ -23,6 +23,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -112,12 +113,7 @@ func isRelevant(ident string, identFilter []string) bool {
 		return true
 	}
 
-	for _, filter := range identFilter {
-		if ident == filter {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(identFilter, ident)
 }
 
 func processLoop(ctx *samler) {

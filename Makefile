@@ -31,3 +31,9 @@ clean:
 	rm -f *.o
 	rm -f samler
 	make -C libsml clean
+
+.PHONY: update
+update:
+	go get -u ./...
+	go mod tidy
+	go fix ./...

@@ -45,7 +45,7 @@ func InitializeInflux(
 			"prefix": measurement.Prefix,
 			"suffix": measurement.Suffix,
 		}
-		fields := map[string]interface{}{
+		fields := map[string]any{
 			"value": measurement.Value,
 		}
 		debug("Sending to influx", &measurement)

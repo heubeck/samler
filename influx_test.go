@@ -70,7 +70,7 @@ func TestSuccessfulInfluxSend(t *testing.T) {
 	port, _ := container.MappedPort(ctx, "8086/tcp")
 
 	// Given
-	influxUrl := fmt.Sprintf("http://%s:%d", host, port.Int())
+	influxUrl := fmt.Sprintf("http://%s:%d", host, port.Num())
 	sender := selectBackend(map[string]string{
 		Backend:           "influx",
 		InfluxUrl:         influxUrl,

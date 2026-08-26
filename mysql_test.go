@@ -65,7 +65,7 @@ func TestSuccessfulMySQLSend(t *testing.T) {
 	port, _ := container.MappedPort(ctx, "3306/tcp")
 
 	// Given
-	dsn := fmt.Sprintf("root:password@tcp(%s:%d)/samler", host, port.Int())
+	dsn := fmt.Sprintf("root:password@tcp(%s:%d)/samler", host, port.Num())
 
 	sender := selectBackend(map[string]string{
 		Backend:    "mysql",
